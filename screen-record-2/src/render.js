@@ -1,4 +1,4 @@
-const { desktopCapturer, remote } = require('electron');
+const { desktopCapturer } = require('electron');
 
 const { writeFile } = require('fs');
 
@@ -14,7 +14,7 @@ const videoElement = document.querySelector('video');
 
 const startBtn = document.getElementById('startBtn');
 startBtn.onclick = e => {
-  mediaRecorder.start();
+  MediaRecorder.start();
   startBtn.classList.add('is-danger');
   startBtn.innerText = 'Recording';
 }
@@ -22,9 +22,9 @@ startBtn.onclick = e => {
 const stopBtn = document.getElementById('stopBtn');
 
 stopBtn.onclick = e => {
-  mediaRecorder.stop();
-  startBtn.classList.remove('is-danger');
-  startBtn.innerText = 'Start';
+    mediaRecorder.stop();
+    startBtn.classList.remove('is-danger');
+    startBtn.innerText = 'Start';
 }
 
 const videoSelectBtn = document.getElementById('videoSelectBtn');
@@ -81,26 +81,25 @@ async function selectSource(source) {
   mediaRecorder.ondataavailable = handleDataAvailable;
   mediaRecorder.onstop = handlestop;
     
-  //Updates the UI
 };
 
 //Captures all recorded chunks
 function handleDataAvailable(e) {
     console.log('video data available');
-    recordedChunks.push(e.data);
+    recorderdChunks.push(e.data);
 }
 
 ////Save the video file on stop
 //Enregistrez le fichier vidéo à l'arrêt
 async function handleStop(e) {
-  const blob = new Blob(recordedChunks, {
+  const blob = new Blob(recorderdChunks, {
     type: 'video/webm; codecs=vp9'
   });
 
   const buffer = Buffer.from(await blob.arrayBuffer());
 
   const { filePath } = await dialog.showSaveDialog({
-    buttonLabel: 'Save Video',
+    buttonLabel: 'SaveVideo',
     defaultPath: `vid-${Date.now()}.webm`
   });
 
