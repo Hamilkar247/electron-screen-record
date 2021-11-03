@@ -1,14 +1,34 @@
+const { desktopCapturer } = require('electron');
 
+const { writeFile } = require('fs');
+
+const { dialog, Menu } = remote;
+
+// Global state
+// MediaRecorder instance to capture footage
+let mediaRecorder;
+const recorderdChunks = [];
 
 //Buttons 
 const videoElement = document.querySelector('video');
+
 const startBtn = document.getElementById('startBtn');
+startBtn.onclick = e => {
+  MediaRecorder.start();
+  startBtn.classList.add('is-danger');
+  startBtn.innerText = 'Recording';
+}
+
 const stopBtn = document.getElementById('stopBtn');
+
+stopBtn.onclick = e => {
+    mediaRecorder.stop();
+    startBtn.classList.remove('is-danger');
+    startBtn.innerText = 'Start';
+}
+
 const videoSelectBtn = document.getElementById('videoSelectBtn');
 videoSelectBtn.onclink = getVideoSources;
-
-const { desktopCapturer } = require('electron')
-const { Menu } = remote;
 
 //Obtenez les sources vidéo disponibles
 ////Get the available video sources
@@ -29,10 +49,10 @@ async function getVideoSources() {
   videoOptionsMenu.popup();
 }
 
-let mediaRecorder; //MediaRecorder instance to capture footage
-const recorderdChunks = [];
 
+// Change the videoSource window to record
 async function selectSource(source) {
+
   videoSelectBtn.innerText = source.name;
 
   const constraints = {
@@ -60,15 +80,14 @@ async function selectSource(source) {
   //Register Event Handlers
   mediaRecorder.ondataavailable = handleDataAvailable;
   mediaRecorder.onstop = handlestop;
-
-  //Captures all recorded chunks
-  function handleDataAvailable(e) {
-      recorderdChunks.push(e.data);
-  }
     
 };
 
-const { writeFile } = require('fs');
+//Captures all recorded chunks
+function handleDataAvailable(e) {
+    console.log('video data available');
+    recorderdChunks.push(e.data);
+}
 
 ////Save the video file on stop
 //Enregistrez le fichier vidéo à l'arrêt
@@ -85,7 +104,8 @@ async function handleStop(e) {
   });
 
   console.log(filePath);
-  
-  writeFile(filePath, buffer, () => console.log('video saved successfully!'));
+  if (filePath) {
+    writeFile(filePath, buffer, () => console.log('video saved successfully!'));
+  }
 }
 
